@@ -34,10 +34,12 @@
       (.put bindings k v))
     bindings))
 
-(defmulti eval-script (fn [s & more] (class s)))
+(defmulti eval-script (fn [s & more] (type s)))
 (defmethod eval-script String [language script & [params]]
   (-> language
       make-script-engine
       (eval-script script params)))
+(defmethod eval-script clojure.lang.Keyword [language script & [params]]
+  (eval-script (name language) script params))
 (defmethod eval-script ScriptEngine [script-engine script & [params]]
   (.eval script-engine script (params->bindings params)))
